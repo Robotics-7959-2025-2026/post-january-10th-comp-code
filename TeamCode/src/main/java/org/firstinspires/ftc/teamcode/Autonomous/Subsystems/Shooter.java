@@ -1,0 +1,72 @@
+package org.firstinspires.ftc.teamcode.Autonomous.Subsystems;
+
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
+import dev.nextftc.control.ControlSystem;
+import dev.nextftc.control.feedback.PIDCoefficients;
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.controllable.RunToPosition;
+import dev.nextftc.hardware.controllable.RunToVelocity;
+import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.powerable.SetPower;
+
+@Configurable
+public  class Shooter implements Subsystem {
+    public static double kP = 0.00012;
+    public static double kV = 0.00047;
+    public static double kA = 0;
+    public static double kS = 0;
+    public static double kI = 0, kD = 0;
+
+    PIDCoefficients coefficients = new PIDCoefficients(kP, kI, kD);
+    public static final Shooter INSTANCE = new Shooter();
+    private Shooter() { }
+
+    private static MotorEx motor2 = new MotorEx("shooterMotor2");
+    private static MotorEx motor3 = new MotorEx("shooterMotor3");
+    private boolean togglePeriodic = false;
+    private ControlSystem controlSystem = ControlSystem.builder()
+            .velPid(coefficients)
+            .basicFF(kV, kA, kS)
+            .build();
+    //kp * (velocity + currentVelocity)/kF
+
+    public Command toLow = new RunToVelocity(controlSystem, 900).requires(this);
+    public Command toMiddle = new RunToPosition(controlSystem, 500).requires(this);
+    public Command toHigh = new RunToVelocity(controlSystem, 1200, 800).requires(this);
+    public Command togglePeriodicOn = new Command() {
+
+        @Override
+        public boolean isDone() {
+            togglePeriodic = true;
+            return true;
+        }
+    };
+
+    public static final Command turnon = new InstantCommand(() -> {
+        motor2.setPower(0.7);
+        motor3.setPower(0.7);
+    });
+
+    public static final Command turnoff = new InstantCommand(() -> {
+        motor2.setPower(0);
+        motor3.setPower(0);
+    });
+
+    public static double returnVelocity(){
+        return Shooter.motor2.getVelocity();
+    }
+    public Command togglePeriodicOff = new Command() {
+
+        @Override
+        public boolean isDone() {
+            togglePeriodic = false;
+            return true;
+        }
+    };
+}
