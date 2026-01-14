@@ -31,6 +31,7 @@ public class Motors {
         rbMotor.setDirection(DcMotor.Direction.REVERSE);
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotor3.setDirection(DcMotorSimple.Direction.FORWARD);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }

@@ -25,8 +25,8 @@ public class hunterthugtuning extends LinearOpMode {
     public double lowVelocity = 900;
 
     double curTargetVelocity = highVelocity;
-    double F = 14;
-    double P = 0.3;
+    double F = 13.6585;
+    double P = 0.588;
     private double nominalVoltage = 12.5;
     private double desiredPower = 1;
     private double batteryVoltage, correctedPower;
