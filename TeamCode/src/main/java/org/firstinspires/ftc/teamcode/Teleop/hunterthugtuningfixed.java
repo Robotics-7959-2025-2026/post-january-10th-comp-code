@@ -26,7 +26,6 @@ public class hunterthugtuningfixed extends LinearOpMode {
 
 
     @Override
-
     public void runOpMode() {
         flywheelMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor2");
         flywheelMotor2 = hardwareMap.get(DcMotorEx.class,"shooterMotor3");

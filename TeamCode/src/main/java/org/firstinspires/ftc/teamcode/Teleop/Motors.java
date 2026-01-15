@@ -23,6 +23,7 @@ public class Motors {
         shooterMotor3 = hardwareMap.get(DcMotorEx.class, "shooterMotor3");
         transfer = hardwareMap.get(DcMotorEx.class, "transfer");
 
+        // Me fr
         doorToucher = hardwareMap.get(Servo.class, "door");
 
         lfMotor.setDirection(DcMotor.Direction.FORWARD);

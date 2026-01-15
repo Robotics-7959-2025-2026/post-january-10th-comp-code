@@ -40,9 +40,6 @@ public class PIDFlywheelTuning extends LinearOpMode {
         batteryVoltage = battery.getVoltage();
 
         Motors.init(this.hardwareMap);
-        PIDFCoefficients pidfCoefficients1 = new PIDFCoefficients(P, 0, 0, F);
-        shooterMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients1);
-        shooterMotor3.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients1);
         telemetry.addLine("init complete and ready for tuning");
         telemetry.update();
 
@@ -82,11 +79,13 @@ public class PIDFlywheelTuning extends LinearOpMode {
             shooterMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients2);
             shooterMotor3.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients2);
 
-            shooterMotor2.setVelocity(curTargetVelocity);
-            shooterMotor3.setVelocity(curTargetVelocity);
+            double adjustedVelocity = adjustPowerForVoltage(curTargetVelocity, nominalVoltage, batteryVoltage);
+
+            shooterMotor2.setVelocity(adjustedVelocity);
+            shooterMotor3.setVelocity(adjustedVelocity);
 
             double curVelocity = shooterMotor3.getVelocity();
-            double error = curTargetVelocity + curVelocity;
+            double error = curTargetVelocity - curVelocity;
 
             if(gamepad1.left_trigger>0.2){
                 transfer.setPower(1);
@@ -109,5 +108,10 @@ public class PIDFlywheelTuning extends LinearOpMode {
             telemetry.update();
 
         }
+    }
+
+    public double adjustPowerForVoltage(double desiredPower, double nominalVoltage, double batteryVoltage) {
+        double correctedPower = desiredPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
+        return Math.max(-1.0, Math.min(correctedPower, 1.0));
     }
 }
