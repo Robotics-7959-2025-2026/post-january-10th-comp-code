@@ -12,25 +12,30 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import org.firstinspires.ftc.teamcode.subsystem.util.newPIDFController;
 
 //We are so back
 @Configurable
 @TeleOp(name = "7959 Teleop")
 public class OfficialTeleop extends LinearOpMode {
+    newPIDFController flywheelController =
+            new newPIDFController(0.015, 0.0, 0.065067, 0.0);
+
 
     private double nominalVoltage = 12.5;
+    public static double targetVelocity, velocity;
     private double desiredPower = 1;
     private double batteryVoltage, correctedPower;
 
     private double ctrlPow = 2.0;
     double error;
     double curVelocity;
-    double curTargetVelocity = 1230;
+    double curTargetVelocity = 1240;
     double farTargetVelocity = 2000;
     private static final double BASE_F = 14.5;
     private static final double BASE_P = 0.4;
-    double F = 14.5;
-    double P = 0.5;
+    double F = 14.02;
+    double P = 0.015;
     private double rx;
     private boolean doorToggle = false;
 
@@ -46,9 +51,16 @@ public class OfficialTeleop extends LinearOpMode {
 
         VoltageSensor battery = hardwareMap.voltageSensor.iterator().next();
         batteryVoltage = battery.getVoltage();
-        PIDFCoefficients pidfCoefficients1 = new PIDFCoefficients(P, 0, 0, F);
-        shooterMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients1);
-        shooterMotor3.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients1);
+//        PIDFCoefficients pidfCoefficients1 = new PIDFCoefficients(P, 0, 0, F);
+//        shooterMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients1);
+//        shooterMotor3.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients1);
+        shooterMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelController.setFeedforward(
+                0.00036, // kV
+                0.0,    // kA (not needed for flywheel)
+                0.065067     // kS
+        );
         waitForStart();
         while (opModeIsActive()) {
             telemetry.update();
@@ -74,19 +86,27 @@ public class OfficialTeleop extends LinearOpMode {
                 intakeMotor.setPower(0.0);
             }
 
-            double scaledF = BASE_F * (12.6 / batteryVoltage);
+            double currentVelocity = shooterMotor3.getVelocity();
+            double kV = 0.00036;
+            double I = 0;
+            double kS = 0.065067;
+            telemetry.addData("TargetVel", targetVelocity);
+            telemetry.addData("CurrentVel", velocity);
+            flywheelController.setPIDF(P,I, 0.0, 0);
+            flywheelController.setFeedforward(kV,0,kS);
+            velocity = shooterMotor2.getVelocity();
 
+            // ===== CUSTOM FLYWHEEL VELOCITY CONTROL =====
 
-            PIDFCoefficients pidfCoefficients2 = new PIDFCoefficients(P, 0, 0, scaledF);
-            shooterMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients2);
-            shooterMotor3.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients2);
+            if (gamepad1.right_bumper) {
+                targetVelocity = 1240;
+                shooterMotor2.setPower(flywheelController.calculate(targetVelocity - velocity,targetVelocity,0));
+                shooterMotor3.setPower(flywheelController.calculate(targetVelocity - velocity,targetVelocity,0));
 
-            if(gamepad1.right_bumper){
-                shooterMotor2.setVelocity(curTargetVelocity);
-                shooterMotor3.setVelocity(curTargetVelocity);
-            }else{
-                shooterMotor2.setVelocity(0);
-                shooterMotor3.setVelocity(0);
+            } else {
+                targetVelocity = 0;
+                shooterMotor2.setPower(0.0);
+                shooterMotor3.setPower(0.0);
             }
             if(gamepad1.left_trigger>0.2){
                 transfer.setPower(0.7);
@@ -113,7 +133,6 @@ public class OfficialTeleop extends LinearOpMode {
             telemetry.addData("Target velocity", curTargetVelocity);
             telemetry.addData("Current Velocity", "%.2f", curVelocity);
             telemetry.addData("Error", "%.2f", error);
-            telemetry.addData("F", scaledF);
 
             telemetry.update();
 

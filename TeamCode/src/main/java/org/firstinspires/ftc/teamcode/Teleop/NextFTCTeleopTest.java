@@ -30,10 +30,10 @@ public class NextFTCTeleopTest extends NextFTCOpMode {
     }
     TelemetryManager tm = PanelsTelemetry.INSTANCE.getTelemetry();
 
-    private final MotorEx frontLeftMotor = new MotorEx("front_left_drive");
-    private final MotorEx frontRightMotor = new MotorEx("front_right_drive").reversed();
-    private final MotorEx backLeftMotor = new MotorEx("back_left_drive");
-    private final MotorEx backRightMotor = new MotorEx("back_right_drive").reversed();;
+    public static MotorEx frontLeftMotor = new MotorEx("front_left_drive");
+    public static MotorEx frontRightMotor = new MotorEx("front_right_drive").reversed();
+    public static MotorEx backLeftMotor = new MotorEx("back_left_drive");
+    public static MotorEx backRightMotor = new MotorEx("back_right_drive").reversed();;
 
     @Override
     public void onStartButtonPressed() {
