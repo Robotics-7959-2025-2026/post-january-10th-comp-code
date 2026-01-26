@@ -50,6 +50,9 @@ public class PIDFlywheelTuning extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
 
+            batteryVoltage = battery.getVoltage();
+
+
             if(gamepad1.yWasPressed()){
                 if(curTargetVelocity == highVelocity){
                     curTargetVelocity = lowVelocity;
@@ -99,6 +102,7 @@ public class PIDFlywheelTuning extends LinearOpMode {
             }
 
             //p = 9.7, f = 1,
+
             telemetry.addData("Target velocity", curTargetVelocity);
             telemetry.addData("Current Velocity", "%.2f", curVelocity);
             telemetry.addData("Error", "%.2f", error);
