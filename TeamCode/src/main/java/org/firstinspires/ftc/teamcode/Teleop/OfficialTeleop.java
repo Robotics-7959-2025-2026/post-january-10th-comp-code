@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import org.firstinspires.ftc.teamcode.subsystem.util.newPIDFController;
+import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
 
 //We are so back
 @Configurable
 @TeleOp(name = "7959 Teleop")
 public class OfficialTeleop extends LinearOpMode {
-    newPIDFController flywheelController =
+    public newPIDFController flywheelController =
             new newPIDFController(0.015, 0.0, 0.065067, 0.0);
 
 

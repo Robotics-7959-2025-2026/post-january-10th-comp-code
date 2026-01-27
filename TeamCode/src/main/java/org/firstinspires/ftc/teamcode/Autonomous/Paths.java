@@ -101,6 +101,10 @@ public class Paths {
         return paths;
     }
 
+    public static Pose blueStartPose() {
+        return new Pose(21.712660028449505, 126.17923186344238, Math.toRadians(150));
+    }
+
     public static Paths red(Follower follower) {
         Paths paths = new Paths();
         paths.goShootPre = follower.pathBuilder().addPath(
@@ -183,5 +187,9 @@ public class Paths {
 
                 .build();
         return paths;
+    }
+
+    public static Pose redStartPose() {
+        return new Pose(121.05832147937411, 125.76955903271693, Math.toRadians(40));
     }
 }
