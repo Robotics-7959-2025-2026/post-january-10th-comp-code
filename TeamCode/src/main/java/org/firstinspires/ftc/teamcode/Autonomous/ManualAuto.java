@@ -90,79 +90,120 @@ public abstract class ManualAuto extends LinearOpMode {
         intakeDesired = 1.0;
         shooterTarget = shooterHigh;
 
-        goTo(paths.goShootPre);
+        if (goTo(paths.goShootPre)) {
+            return;
+        }
 
         // Shoot for 3s
         transferTarget = transferHigh;
-        waitMillis(3000);
+        if (waitMillis(3000)) {
+            return;
+        }
 
         transferTarget = 0.0;
         shooterTarget = 0.0;
 
         // Grab balls 4, 5, 6
         intakeDesired = 1.0;
-        goTo(paths.goGrabOne);
+        if (goTo(paths.goGrabOne)) {
+            return;
+        }
 
         // Shoot
         intakeDesired = 0.0;
         shooterTarget = shooterHigh;
-        goTo(paths.goShootOne);
+        if (goTo(paths.goShootOne)) {
+            return;
+        }
 
         transferTarget = transferHigh;
-        waitMillis(3000);
+        if (waitMillis(3000)) {
+            return;
+        }
 
         transferTarget = 0.0;
         shooterTarget = 0.0;
 
         // Grab balls 7, 8, 9
         intakeDesired = 1.0;
-        goTo(paths.goGrabTwo);
+        if (goTo(paths.goGrabTwo)) {
+            return;
+        }
 
         // Shoot
         intakeDesired = 0.0;
         shooterTarget = shooterHigh;
-        goTo(paths.goShootTwo);
+        if (goTo(paths.goShootTwo)) {
+            return;
+        }
 
         transferTarget = transferHigh;
-        waitMillis(3000);
+        if (waitMillis(3000)) {
+            return;
+        }
 
         transferTarget = 0.0;
         shooterTarget = 0.0;
 
         // Grab balls 10, 11, 12
         intakeDesired = 1.0;
-        goTo(paths.goGrabThree);
+        if (goTo(paths.goGrabThree)) {
+            return;
+        }
 
         // Shoot
         intakeDesired = 0.0;
         shooterTarget = shooterHigh;
-        goTo(paths.goShootThree);
+        if (goTo(paths.goShootThree)) {
+            return;
+        }
 
         transferTarget = transferHigh;
-        waitMillis(3000);
+        if (waitMillis(3000)) {
+            return;
+        }
 
         transferTarget = 0.0;
         shooterTarget = 0.0;
 
-        goTo(paths.Path8);
-        waitMillis(200);
+        if (goTo(paths.Path8)) {
+            return;
+        }
+        if (waitMillis(200)) {
+            return;
+        }
 
         telemetry.addData("Status", "Done");
+
+        // NOTE: Remove this?
+        while (opModeIsActive()) {
+            idle();
+        }
     }
 
-    public void waitMillis(long millis) {
+    // Always return if this returns true
+    public boolean waitMillis(long millis) {
         Timing.Timer timer = new Timing.Timer(millis, TimeUnit.MILLISECONDS);
         timer.start();
         while (timer.isTimerOn()) {
+            if (isStopRequested()) {
+                return true;
+            }
             update();
         }
+        return false;
     }
 
-    public void goTo(PathChain loc) {
+    // Always return if this returns true
+    public boolean goTo(PathChain loc) {
         pedro.followPath(loc);
         while (pedro.isBusy()) {
+            if (isStopRequested()) {
+                return true;
+            }
             update();
         }
+        return false;
     }
 
     public void update() {
